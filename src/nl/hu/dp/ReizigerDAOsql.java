@@ -25,7 +25,7 @@ public class ReizigerDAOsql implements ReizigerDAO {
             pst.close();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.message();
             return false;
         }
     }
@@ -44,7 +44,7 @@ public class ReizigerDAOsql implements ReizigerDAO {
             pst.close();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.message();
             return false;
         }
     }
@@ -59,7 +59,7 @@ public class ReizigerDAOsql implements ReizigerDAO {
             pst.close();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.message();
             return false;
         }
     }
@@ -72,7 +72,11 @@ public class ReizigerDAOsql implements ReizigerDAO {
             pst.setInt(1, reiziger_id);
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
-                Reiziger reiziger = new Reiziger(rs.getInt("reiziger_id"), rs.getString("voorletters"), rs.getString("tussenvoegsel"), rs.getString("achternaam"), rs.getDate("geboortedatum"));
+                Reiziger reiziger = new Reiziger(rs.getInt("reiziger_id"),
+                                                 rs.getString("voorletters"),
+                                                 rs.getString("tussenvoegsel"),
+                                                 rs.getString("achternaam"),
+                                                 rs.getDate("geboortedatum"));
                 rs.close();
                 pst.close();
                 return reiziger;
@@ -80,7 +84,7 @@ public class ReizigerDAOsql implements ReizigerDAO {
             rs.close();
             pst.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.message();
         }
         return null;
     }
@@ -94,12 +98,16 @@ public class ReizigerDAOsql implements ReizigerDAO {
             pst.setDate(1, datum);
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                reizigers.add(new Reiziger(rs.getInt("reiziger_id"), rs.getString("voorletters"), rs.getString("tussenvoegsel"), rs.getString("achternaam"), rs.getDate("geboortedatum")));
+                reizigers.add(new Reiziger(rs.getInt("reiziger_id"),
+                                           rs.getString("voorletters"),
+                                           rs.getString("tussenvoegsel"),
+                                           rs.getString("achternaam"),
+                                           rs.getDate("geboortedatum")));
             }
             rs.close();
             pst.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.message();
         }
         return reizigers;
     }
@@ -112,12 +120,16 @@ public class ReizigerDAOsql implements ReizigerDAO {
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(query);
             while (rs.next()) {
-                reizigers.add(new Reiziger(rs.getInt("reiziger_id"), rs.getString("voorletters"), rs.getString("tussenvoegsel"), rs.getString("achternaam"), rs.getDate("geboortedatum")));
+                reizigers.add(new Reiziger(rs.getInt("reiziger_id"),
+                                           rs.getString("voorletters"),
+                                           rs.getString("tussenvoegsel"),
+                                           rs.getString("achternaam"),
+                                           rs.getDate("geboortedatum")));
             }
             rs.close();
             st.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.message();
         }
         return reizigers;
     }
