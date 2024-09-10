@@ -87,7 +87,7 @@ VALUES (nextval('afdeling_nr_seq'), 'IT', 'DEN HAAG', 7952);
 
 -- c)
 ALTER TABLE afdelingen
-ALTER COLUMN anr TYPE INTERGER;
+ALTER COLUMN anr TYPE INTEGER;
 
 -- S1.4. Adressen
 --
