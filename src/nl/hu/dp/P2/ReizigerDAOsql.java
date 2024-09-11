@@ -1,6 +1,8 @@
 package nl.hu.dp.P2;
 
 import nl.hu.dp.P2.domain.Reiziger;
+import nl.hu.dp.P3.AdresDAO;
+import nl.hu.dp.P3.domain.Adres;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -8,9 +10,11 @@ import java.util.List;
 
 public class ReizigerDAOsql implements ReizigerDAO {
     private Connection connection;
+    private AdresDAO adresDAO;
 
     public ReizigerDAOsql(Connection connection) {
         this.connection = connection;
+        this.adresDAO = adresDAO;
     }
 
     @Override
@@ -25,6 +29,12 @@ public class ReizigerDAOsql implements ReizigerDAO {
             pst.setDate(5, reiziger.getGeboortedatum());
             pst.executeUpdate();
             pst.close();
+
+            // De bijbehorende adres opslaan
+            if (reiziger.getAdres() != null) {
+                adresDAO.save(reiziger.getAdres());
+            }
+
             return true;
         } catch (SQLException e) {
             e.getMessage();
@@ -44,6 +54,12 @@ public class ReizigerDAOsql implements ReizigerDAO {
             pst.setDate(5, reiziger.getGeboortedatum());
             pst.executeUpdate();
             pst.close();
+
+            // De bijbehorende adres updaten
+            if (reiziger.getAdres() != null) {
+                adresDAO.update(reiziger.getAdres());
+            }
+
             return true;
         } catch (SQLException e) {
             e.getMessage();
@@ -54,6 +70,11 @@ public class ReizigerDAOsql implements ReizigerDAO {
     @Override
     public boolean delete(Reiziger reiziger) {
         try {
+            // Eerst de bijbehorende adres verwijideren
+            if (reiziger.getAdres() != null) {
+                adresDAO.delete(reiziger.getAdres());
+            }
+
             String query = "DELETE FROM reiziger WHERE reiziger_id = ?";
             PreparedStatement pst = connection.prepareStatement(query);
             pst.setInt(1, reiziger.getId());
@@ -79,6 +100,11 @@ public class ReizigerDAOsql implements ReizigerDAO {
                         rs.getString("tussenvoegsel"),
                         rs.getString("achternaam"),
                         rs.getDate("geboortedatum"));
+
+                // De bijbehorende adres ophalen
+                Adres adres = adresDAO.findByReiziger(reiziger);
+                reiziger.setAdres(adres);
+
                 rs.close();
                 pst.close();
                 return reiziger;
@@ -127,6 +153,12 @@ public class ReizigerDAOsql implements ReizigerDAO {
                         rs.getString("tussenvoegsel"),
                         rs.getString("achternaam"),
                         rs.getDate("geboortedatum")));
+
+                // De bijhorende adres ophalen
+                Adres adres = adresDAO.findByReiziger(reiziger);
+                reiziger.setAdres(adres);
+
+                reizigers.add(reiziger);
             }
             rs.close();
             st.close();
