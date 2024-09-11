@@ -1,4 +1,6 @@
-package nl.hu.dp;
+package nl.hu.dp.P2;
+
+import nl.hu.dp.P2.domain.Reiziger;
 
 import java.sql.Date;
 import java.util.List;

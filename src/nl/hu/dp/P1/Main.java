@@ -1,4 +1,7 @@
-package nl.hu.dp;
+package nl.hu.dp.P1;
+
+import nl.hu.dp.P2.ReizigerDAOsql;
+import nl.hu.dp.P2.domain.Reiziger;
 
 import java.sql.*;
 import java.util.List;
