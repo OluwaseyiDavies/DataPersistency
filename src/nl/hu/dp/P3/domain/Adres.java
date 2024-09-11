@@ -1,4 +1,4 @@
-package nl.hu.dp.P3;
+package nl.hu.dp.P3.domain;
 
 import nl.hu.dp.P2.domain.Reiziger;
 
