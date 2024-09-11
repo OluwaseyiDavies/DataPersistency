@@ -32,6 +32,11 @@
 -- Geef code en omschrijving van alle cursussen die precies vier dagen duren.
 -- DROP VIEW IF EXISTS s2_1; CREATE OR REPLACE VIEW s2_1 AS                                                     -- [TEST]
 
+DROP VIEW IF EXISTS s2_1;
+CREATE OR REPLACE VIEW s2_1 AS
+SELECT code, omschrijving
+FROM cursus
+WHERE duur = 4;
 
 -- S2.2. Medewerkersoverzicht
 --
@@ -39,6 +44,11 @@
 -- en per functie op leeftijd (van jong naar oud).
 -- DROP VIEW IF EXISTS s2_2; CREATE OR REPLACE VIEW s2_2 AS                                                     -- [TEST]
 
+DROP VIEW IF EXISTS s2_2;
+CREATE OR REPLACE VIEW s2_2 AS
+SELECT *
+FROM medewerker
+ORDER BY functie, leeftijd ASC;
 
 -- S2.3. Door het land
 --
@@ -46,27 +56,38 @@
 -- code en begindatum.
 -- DROP VIEW IF EXISTS s2_3; CREATE OR REPLACE VIEW s2_3 AS                                                     -- [TEST]
 
+DROP VIEW IF EXISTS s2_3;
+CREATE OR REPLACE VIEW s2_3 AS
+SELECT code, begindatum
+FROM cursus
+    WHERE locatie in ('Utrecht', 'Maastricht');
 
 -- S2.4. Namen
 --
 -- Geef de naam en voorletters van alle medewerkers, behalve van R. Jansen.
 -- DROP VIEW IF EXISTS s2_4; CREATE OR REPLACE VIEW s2_4 AS                                                     -- [TEST]
 
+SELECT *
+FROM medewerkers
+WHERE naam != 'JANSEN' OR voorl != 'R'
 
 -- S2.5. Nieuwe SQL-cursus
 --
 -- Er wordt een nieuwe uitvoering gepland voor cursus S02, en wel op de
 -- komende 2 maart. De cursus wordt gegeven in Leerdam door Nick Smit.
 -- Voeg deze gegevens toe.
-INSERT
-ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
+INSERT INTO uitvoeringen (cursus, begindatum, locatie, docent)
+VALUES ('S02', '2024-03-02', Leerdam, 7369)
+ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 -- S2.6. Stagiairs
 --
 -- Neem één van je collega-studenten aan als stagiair ('STAGIAIR') en
 -- voer zijn of haar gegevens in. Kies een personeelnummer boven de 8000.
-INSERT
+
+INSERT INTO medewerker (mnr, naam, voorl, functie, chef, gebdatum, maandsal, comm, afd)
+VALUES (8001, 'Student', 'A.', 'STAGIAIR', NULL, '2003-01-15', 600.00, NULL, 40)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 
@@ -74,7 +95,9 @@ ON CONFLICT DO NOTHING;                                                         
 --
 -- We breiden het salarissysteem uit naar zes schalen. Voer een extra schaal in voor mensen die
 -- tussen de 3001 en 4000 euro verdienen. Zij krijgen een toelage van 500 euro.
-INSERT
+
+INSERT INTO schalen (snr, ondergrens, bovengrens, toelage)
+VALUES (6, 3001.00, 4000.00, 500.00)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 
@@ -83,6 +106,7 @@ ON CONFLICT DO NOTHING;                                                         
 -- Er wordt een nieuwe 6-daagse cursus 'Data & Persistency' in het programma opgenomen.
 -- Voeg deze cursus met code 'D&P' toe, maak twee uitvoeringen in Leerdam en schrijf drie
 -- mensen in.
+
 INSERT
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 INSERT
@@ -103,25 +127,43 @@ ON CONFLICT DO NOTHING;                                                         
 -- van 5.5%, behalve de manager van de afdeling, deze krijgt namelijk meer: 7%.
 -- Voer deze verhogingen door.
 
+INSERT INTO schalen (snr, ondergrens, bovengrens, toelage)
+VALUES (6, 3001.00, 4000.00, 500.00)
+ON CONFLICT DO NOTHING;
 
 -- S2.10. Concurrent
 --
 -- Martens heeft als verkoper succes en wordt door de concurrent
 -- weggekocht. Verwijder zijn gegevens.
 
+DELETE FROM medewerker
+WHERE naam = 'JAM';
+
+DELETE FROM medewerker
+WHERE naamm = 'ALDERS';
+
 -- Zijn collega Alders heeft ook plannen om te vertrekken. Verwijder ook zijn gegevens.
 -- Waarom lukt dit (niet)?
 
+-- 1.   Referentiële integriteit (Foreign Key Constraints): Als de medewerker Alders in andere tabellen wordt gebruikt
+--      (bijvoorbeeld als verwijzing in de uitvoeringen- of afdeling-tabellen), kan het verwijderen mislukken.
+--      Dit komt doordat de database wil voorkomen dat er 'weesgegevens' ontstaan, waarbij verwijzingen in andere
+--      tabellen naar een niet-bestaande medewerker wijzen.
+-- 2.   Triggers: Er kunnen triggers in de database zijn die het verwijderen van specifieke medewerkers verhinderen
+--      of extra acties uitvoeren bij het verwijderen.
 
 -- S2.11. Nieuwe afdeling
 --
 -- Je wordt hoofd van de nieuwe afdeling 'FINANCIEN' te Leerdam,
 -- onder de hoede van De Koning. Kies een personeelnummer boven de 8000.
 -- Zorg voor de juiste invoer van deze gegevens.
-INSERT
+
+INSERT INTO afdeling (anr, naam, locatie, hoofd)
+VALUES (50, 'FINANCIEN', 'LEERDAM', 8001)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
-INSERT
+INSERT INTO medewerker (mnr, naam, voorl, functie, chef, gebdatum, maandsal, comm, afd)
+VALUES (8001, 'DAVIES', 'OOB', 'HOOFD', (SELECT mnr FROM medewerker WHERE naam = 'De Koning'), '2003-01-21', 4000.00, NULL, 40)
 ON CONFLICT DO NOTHING;                                                                                         -- [TEST]
 
 
