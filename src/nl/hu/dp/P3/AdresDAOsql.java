@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AdresDAOsql implements AdresDAO {
     private Connection connection;
@@ -117,6 +119,33 @@ public class AdresDAOsql implements AdresDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public List<Adres> findAll() {
+        List<Adres> adressen = new ArrayList<>();
+        try {
+            String query = "SELECT * FROM adres";
+            PreparedStatement pst = connection.prepareStatement(query);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                ReizigerDAOsql reizigerDAO = new ReizigerDAOsql(connection, this);
+                Reiziger reiziger = reizigerDAO.findById(rs.getInt("reiziger_id"));
+                Adres adres = new Adres(
+                        rs.getInt("adres_id"),
+                        rs.getString("huisnummer"),
+                        rs.getString("straat"),
+                        rs.getString("woonplaats"),
+                        reiziger
+                );
+                adressen.add(adres);
+            }
+            rs.close();
+            pst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return adressen;
     }
 }
 
