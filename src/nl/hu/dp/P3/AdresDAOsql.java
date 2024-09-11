@@ -12,8 +12,8 @@ import java.sql.SQLException;
 public class AdresDAOsql implements AdresDAO {
     private Connection connection;
 
-    public AdresDAOsql() {Connection connection} {
-        this.connection = connection
+    public AdresDAOsql() {Connection connection;} {
+        this.connection = connection;
     }
 
     @Override
