@@ -1,5 +1,7 @@
 package nl.hu.dp.P2.domain;
 
+import nl.hu.dp.P3.domain.Adres;
+
 import java.sql.Date;
 
 public class Reiziger {
@@ -8,6 +10,7 @@ public class Reiziger {
     private String tussenvoegesel;
     private String achternaam;
     private Date geboortedatum;
+    private Adres adres; // Nieuw attribuut voor associatie
 
     public Reiziger(int id, String voorletters, String tussenvoegesel, String achternaam, Date geboortedatum) {
         this.id = id;
@@ -57,6 +60,14 @@ public class Reiziger {
         this.geboortedatum = geboortedatum;
     }
 
+    public Adres getAdres() {
+        return adres;
+    }
+
+    public void setAdres(Adres adres) {
+        this.adres = adres;
+    }
+
     @Override
     public String toString() {
         String volledigeNaam = voorletters;
@@ -64,6 +75,10 @@ public class Reiziger {
             volledigeNaam += "" + tussenvoegesel;
         }
         volledigeNaam += " " + achternaam;
-        return "#" + id + " " + volledigeNaam + " (" + geboortedatum + ")";
+        String output = "#" + id + " " + volledigeNaam + " (" + geboortedatum + ")";
+        if (adres != null) {
+            output += ", Adres {" + adres.toString() + "}";
+        }
+        return output;
     }
 }
