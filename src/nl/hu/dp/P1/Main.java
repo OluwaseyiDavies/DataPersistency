@@ -1,9 +1,16 @@
 package nl.hu.dp.P1;
 
+import nl.hu.dp.P3.AdresDAO;
+import nl.hu.dp.P2.AdresDAOPsql;
+import nl.hu.dp.P2.ReizigerDAO;
 import nl.hu.dp.P2.ReizigerDAOsql;
+import nl.hu.dp.P3.domain.Adres;
 import nl.hu.dp.P2.domain.Reiziger;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.List;
 
 public class Main {
@@ -12,10 +19,10 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         try {
             getConnection();
-            ReizigerDAOsql reizigerDAO = new ReizigerDAOsql(connection);
+            AdresDAO adresDAO = new AdresDAOPsql(connection);
+            ReizigerDAO reizigerDAO = new ReizigerDAOsql(connection, adresDAO);
             testReizigersDAO(reizigerDAO);
-            testConnection();
-        }finally {
+        } finally {
             closeConnection();
         }
     }
@@ -37,45 +44,24 @@ public class Main {
         }
     }
 
-    private static void testConnection() throws SQLException {
-        getConnection();
-        String query = "SELECT voorletters, tussenvoegsel, achternaam, geboortedatum FROM reiziger";
-        PreparedStatement statement = connection.prepareStatement(query);
-        ResultSet resultSet = statement.executeQuery();
-        int counter = 0;
-        System.out.println("Alle reizigers: ");
-        while (resultSet.next()) {
-            counter++;
-            String voorletters = resultSet.getString("voorletters");
-            String tussenvoegsel = resultSet.getString("tussenvoegsel");
-            String achternaam = resultSet.getString("achternaam");
-            Date geboortedatum = resultSet.getDate("geboortedatum");
-
-            String volledigNaam = voorletters;
-            if (tussenvoegsel != null && !tussenvoegsel.isEmpty()) {
-                volledigNaam += "" + tussenvoegsel;
-            }
-            volledigNaam += " " + achternaam;
-
-            System.out.println("#" + counter + ": " + volledigNaam + " (" + geboortedatum + ")");
-        }
-    }
-
-    private static void testReizigersDAO(ReizigerDAOsql rdao) throws SQLException {
+    private static void testReizigersDAO(ReizigerDAO rdao) throws SQLException {
         System.out.println("\n---------- Test ReizigerDAO -------------");
 
         // Alle reizigers ophalen uit de database
         List<Reiziger> reizigers = rdao.findAll();
         System.out.println("[Test] ReizigerDAO.findAll() geeft de volgende reizigers:");
-        for (Reiziger r: reizigers) {
+        for (Reiziger r : reizigers) {
             System.out.println(r);
         }
 
-        //Een nieuwe reiziger aanmaken en opslaan in de database
-        String gbdatum = "1981-03-14";
-        Reiziger sietske = new Reiziger(582911, "S.", "", "Boers", java.sql.Date.valueOf(gbdatum));
+        // Een nieuwe reiziger en adres aanmaken en opslaan
+        String gbdatum = "2002-09-17";
+        Reiziger gerrit = new Reiziger(6, "G.", "van", "Rijn", Date.valueOf(gbdatum));
+        Adres adresGerrit = new Adres(6, "37", "Langegracht", "Utrecht", gerrit);
+        gerrit.setAdres(adresGerrit);
+
         System.out.print("[Test] Eerst " + reizigers.size() + " reizigers, na ReizigerDAO.save() ");
-        rdao.save(sietske);
+        rdao.save(gerrit);
         reizigers = rdao.findAll();
         System.out.println(reizigers.size() + " reizigers\n");
     }
