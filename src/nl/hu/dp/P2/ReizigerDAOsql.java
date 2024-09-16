@@ -12,7 +12,7 @@ public class ReizigerDAOsql implements ReizigerDAO {
     private Connection connection;
     private AdresDAO adresDAO;
 
-    public ReizigerDAOsql(Connection connection) {
+    public ReizigerDAOsql(Connection connection, AdresDAO adresDAO) {
         this.connection = connection;
         this.adresDAO = adresDAO;
     }
@@ -30,14 +30,14 @@ public class ReizigerDAOsql implements ReizigerDAO {
             pst.executeUpdate();
             pst.close();
 
-            // De bijbehorende adres opslaan
+            // Opslaan van het bijbehorende adres
             if (reiziger.getAdres() != null) {
                 adresDAO.save(reiziger.getAdres());
             }
 
             return true;
         } catch (SQLException e) {
-            e.getMessage();
+            e.printStackTrace();
             return false;
         }
     }
@@ -45,24 +45,24 @@ public class ReizigerDAOsql implements ReizigerDAO {
     @Override
     public boolean update(Reiziger reiziger) {
         try {
-            String query = "UPDATE reiziger SET voorletters = ?, tussenvoegesel = ?, achternaam = ?, geboortedatum = ? WHERE reiziger_id = ?";
+            String query = "UPDATE reiziger SET voorletters = ?, tussenvoegsel = ?, achternaam = ?, geboortedatum = ? WHERE reiziger_id = ?";
             PreparedStatement pst = connection.prepareStatement(query);
-            pst.setInt(1, reiziger.getId());
-            pst.setString(2, reiziger.getVoorletters());
-            pst.setString(3, reiziger.getTussenvoegesel());
-            pst.setString(4, reiziger.getAchternaam());
-            pst.setDate(5, reiziger.getGeboortedatum());
+            pst.setString(1, reiziger.getVoorletters());
+            pst.setString(2, reiziger.getTussenvoegesel());
+            pst.setString(3, reiziger.getAchternaam());
+            pst.setDate(4, reiziger.getGeboortedatum());
+            pst.setInt(5, reiziger.getId());
             pst.executeUpdate();
             pst.close();
 
-            // De bijbehorende adres updaten
+            // Update het bijbehorende adres
             if (reiziger.getAdres() != null) {
                 adresDAO.update(reiziger.getAdres());
             }
 
             return true;
         } catch (SQLException e) {
-            e.getMessage();
+            e.printStackTrace();
             return false;
         }
     }
@@ -70,7 +70,7 @@ public class ReizigerDAOsql implements ReizigerDAO {
     @Override
     public boolean delete(Reiziger reiziger) {
         try {
-            // Eerst de bijbehorende adres verwijideren
+            // Verwijder eerst het bijbehorende adres
             if (reiziger.getAdres() != null) {
                 adresDAO.delete(reiziger.getAdres());
             }
@@ -82,17 +82,17 @@ public class ReizigerDAOsql implements ReizigerDAO {
             pst.close();
             return true;
         } catch (SQLException e) {
-            e.getMessage();
+            e.printStackTrace();
             return false;
         }
     }
 
     @Override
-    public Reiziger findById(int reiziger_id) {
+    public Reiziger findById(int id) {
         try {
             String query = "SELECT * FROM reiziger WHERE reiziger_id = ?";
             PreparedStatement pst = connection.prepareStatement(query);
-            pst.setInt(1, reiziger_id);
+            pst.setInt(1, id);
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
                 Reiziger reiziger = new Reiziger(rs.getInt("reiziger_id"),
@@ -101,7 +101,7 @@ public class ReizigerDAOsql implements ReizigerDAO {
                         rs.getString("achternaam"),
                         rs.getDate("geboortedatum"));
 
-                // De bijbehorende adres ophalen
+                // Haal het bijbehorende adres op
                 Adres adres = adresDAO.findByReiziger(reiziger);
                 reiziger.setAdres(adres);
 
@@ -112,32 +112,9 @@ public class ReizigerDAOsql implements ReizigerDAO {
             rs.close();
             pst.close();
         } catch (SQLException e) {
-            e.getMessage();
+            e.printStackTrace();
         }
         return null;
-    }
-
-    @Override
-    public List<Reiziger> findByGbdatum(Date datum) {
-        List<Reiziger> reizigers = new ArrayList<>();
-        try {
-            String query = "SELECT * FROM reiziger WHERE geboortedatum = ?";
-            PreparedStatement pst = connection.prepareStatement(query);
-            pst.setDate(1, datum);
-            ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                reizigers.add(new Reiziger(rs.getInt("reiziger_id"),
-                        rs.getString("voorletters"),
-                        rs.getString("tussenvoegsel"),
-                        rs.getString("achternaam"),
-                        rs.getDate("geboortedatum")));
-            }
-            rs.close();
-            pst.close();
-        } catch (SQLException e) {
-            e.getMessage();
-        }
-        return reizigers;
     }
 
     @Override
@@ -148,13 +125,13 @@ public class ReizigerDAOsql implements ReizigerDAO {
             Statement st = connection.createStatement();
             ResultSet rs = st.executeQuery(query);
             while (rs.next()) {
-                reizigers.add(new Reiziger(rs.getInt("reiziger_id"),
+                Reiziger reiziger = new Reiziger(rs.getInt("reiziger_id"),
                         rs.getString("voorletters"),
                         rs.getString("tussenvoegsel"),
                         rs.getString("achternaam"),
-                        rs.getDate("geboortedatum")));
+                        rs.getDate("geboortedatum"));
 
-                // De bijhorende adres ophalen
+                // Haal het bijbehorende adres op
                 Adres adres = adresDAO.findByReiziger(reiziger);
                 reiziger.setAdres(adres);
 
@@ -163,7 +140,36 @@ public class ReizigerDAOsql implements ReizigerDAO {
             rs.close();
             st.close();
         } catch (SQLException e) {
-            e.getMessage();
+            e.printStackTrace();
+        }
+        return reizigers;
+    }
+
+    @Override
+    public List<Reiziger> findByGbdatum(Date geboortedatum) {
+        List<Reiziger> reizigers = new ArrayList<>();
+        try {
+            String query = "SELECT * FROM reiziger WHERE geboortedatum = ?";
+            PreparedStatement pst = connection.prepareStatement(query);
+            pst.setDate(1, geboortedatum);
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                Reiziger reiziger = new Reiziger(rs.getInt("reiziger_id"),
+                        rs.getString("voorletters"),
+                        rs.getString("tussenvoegsel"),
+                        rs.getString("achternaam"),
+                        rs.getDate("geboortedatum"));
+
+                // Haal het bijbehorende adres op
+                Adres adres = adresDAO.findByReiziger(reiziger);
+                reiziger.setAdres(adres);
+
+                reizigers.add(reiziger);
+            }
+            rs.close();
+            pst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return reizigers;
     }
