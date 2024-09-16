@@ -42,7 +42,8 @@ public class ReizigerDAOHibernate implements ReizigerDAO {
         }
     }
 
-    @Override boolean delete(Reiziger reiziger) {
+    @Override
+    public boolean delete(Reiziger reiziger) {  // Hier is de public modifier toegevoegd
         Transaction transaction = null;
         try {
             transaction = session.beginTransaction();
@@ -66,68 +67,3 @@ public class ReizigerDAOHibernate implements ReizigerDAO {
         return session.createQuery("FROM Reiziger", Reiziger.class).list();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
