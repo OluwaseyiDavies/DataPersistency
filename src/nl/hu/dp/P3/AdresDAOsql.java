@@ -1,8 +1,9 @@
 package nl.hu.dp.P3;
 
 import nl.hu.dp.P2.ReizigerDAOsql;
-import nl.hu.dp.P2.domain.Reiziger;
+import nl.hu.dp.P3.AdresDAO;
 import nl.hu.dp.P3.domain.Adres;
+import nl.hu.dp.P2.domain.Reiziger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,12 +15,12 @@ import java.util.List;
 public class AdresDAOsql implements AdresDAO {
     private Connection connection;
 
-    public AdresDAOsql() {Connection connection;} {
+    public AdresDAOsql(Connection connection) {
         this.connection = connection;
     }
 
     @Override
-    public boolean save (Adres adres) {
+    public boolean save(Adres adres) {
         try {
             String query = "INSERT INTO adres (adres_id, huisnummer, straat, woonplaats, reiziger_id) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement pst = connection.prepareStatement(query);
@@ -71,32 +72,6 @@ public class AdresDAOsql implements AdresDAO {
     }
 
     @Override
-    public Adres findById(int id) {
-        try {
-            String query = "SELECT * FROM adres WHERE adres_id = ?";
-            PreparedStatement pst = connection.prepareStatement(query);
-            pst.setInt(1, id);
-            ResultSet rs = pst.executeQuery();
-            if (rs.next()) {
-                Reiziger reiziger = new ReizigerDAOsql(connection).findById(rs.getInt("reiziger_id"));
-                Adres adres = new Adres(
-                        rs.getInt("adres_id"),
-                        rs.getString("huisnummer"),
-                        rs.getString("straat"),
-                        rs.getString("woonplaats"),
-                        reiziger
-                );
-                rs.close();
-                pst.close();
-                return adres;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
     public Adres findByReiziger(Reiziger reiziger) {
         try {
             String query = "SELECT * FROM adres WHERE reiziger_id = ?";
@@ -129,8 +104,7 @@ public class AdresDAOsql implements AdresDAO {
             PreparedStatement pst = connection.prepareStatement(query);
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                ReizigerDAOsql reizigerDAO = new ReizigerDAOsql(connection, this);
-                Reiziger reiziger = reizigerDAO.findById(rs.getInt("reiziger_id"));
+                Reiziger reiziger = new ReizigerDAOsql(connection, this).findById(rs.getInt("reiziger_id"));
                 Adres adres = new Adres(
                         rs.getInt("adres_id"),
                         rs.getString("huisnummer"),
@@ -147,30 +121,35 @@ public class AdresDAOsql implements AdresDAO {
         }
         return adressen;
     }
+
+    @Override
+    public Adres findById(int id) {
+        try {
+            String query = "SELECT * FROM adres WHERE adres_id = ?";
+            PreparedStatement pst = connection.prepareStatement(query);
+            pst.setInt(1, id);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                Reiziger reiziger = new ReizigerDAOsql(connection, this).findById(rs.getInt("reiziger_id"));
+                Adres adres = new Adres(
+                        rs.getInt("adres_id"),
+                        rs.getString("huisnummer"),
+                        rs.getString("straat"),
+                        rs.getString("woonplaats"),
+                        reiziger
+                );
+                rs.close();
+                pst.close();
+                return adres;
+            }
+            rs.close();
+            pst.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
