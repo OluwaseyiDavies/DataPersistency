@@ -31,7 +31,7 @@ public class Reiziger {
     private Adres adres;
 
     @OneToMany(mappedBy = "reiziger", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<nl.hu.dp.P4.domain.OVChipkaartH> ovChipkaarten = new ArrayList<>();
+    private List<nl.hu.dp.P4.domain.OVChipkaart> ovChipkaarten = new ArrayList<>();
 
     public Reiziger() {}
 
@@ -94,20 +94,20 @@ public class Reiziger {
         }
     }
 
-    public List<nl.hu.dp.P4.domain.OVChipkaartH> getOvChipkaarten() {
+    public List<nl.hu.dp.P4.domain.OVChipkaart> getOvChipkaarten() {
         return ovChipkaarten;
     }
 
-    public void setOvChipkaarten(List<nl.hu.dp.P4.domain.OVChipkaartH> ovChipkaarten) {
+    public void setOvChipkaarten(List<nl.hu.dp.P4.domain.OVChipkaart> ovChipkaarten) {
         this.ovChipkaarten = ovChipkaarten;
-        for (nl.hu.dp.P4.domain.OVChipkaartH ovChipkaart : ovChipkaarten) {
+        for (nl.hu.dp.P4.domain.OVChipkaart ovChipkaart : ovChipkaarten) {
             if (ovChipkaart.getReiziger() != this) {
                 ovChipkaart.setReiziger(this);
             }
         }
     }
 
-    public void addOVChipkaart(nl.hu.dp.P4.domain.OVChipkaartH ovChipkaart) {
+    public void addOVChipkaart(nl.hu.dp.P4.domain.OVChipkaart ovChipkaart) {
         this.ovChipkaarten.add(ovChipkaart);
         ovChipkaart.setReiziger(this);
     }

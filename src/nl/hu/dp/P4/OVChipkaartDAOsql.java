@@ -1,6 +1,6 @@
 package nl.hu.dp.P4;
 
-import nl.hu.dp.P4.domain.OVChipkaartH;
+import nl.hu.dp.P4.domain.OVChipkaart;
 import nl.hu.dp.P4.domain.Reiziger;
 
 import java.sql.Connection;
@@ -18,7 +18,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
     }
 
     @Override
-    public boolean save(OVChipkaartH ovChipkaart) {
+    public boolean save(OVChipkaart ovChipkaart) {
         try {
             String query = "INSERT INTO ov_chipkaart (kaart_nummer, geldig_tot, klasse, saldo, reiziger_id) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement pst = connection.prepareStatement(query);
@@ -37,7 +37,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
     }
 
     @Override
-    public boolean update(OVChipkaartH ovChipkaart) {
+    public boolean update(OVChipkaart ovChipkaart) {
         try {
             String query = "UPDATE ov_chipkaart SET geldig_tot = ?, klasse = ?, saldo = ?, reiziger_id = ? WHERE kaart_nummer = ?";
             PreparedStatement pst = connection.prepareStatement(query);
@@ -56,7 +56,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
     }
 
     @Override
-    public boolean delete(OVChipkaartH ovChipkaart) {
+    public boolean delete(OVChipkaart ovChipkaart) {
         try {
             String query = "DELETE FROM ov_chipkaart WHERE kaart_nummer = ?";
             PreparedStatement pst = connection.prepareStatement(query);
@@ -71,7 +71,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
     }
 
     @Override
-    public OVChipkaartH findById(int kaartNummer) {
+    public OVChipkaart findById(int kaartNummer) {
         try {
             String query = "SELECT * FROM ov_chipkaart WHERE kaart_nummer = ?";
             PreparedStatement pst = connection.prepareStatement(query);
@@ -79,7 +79,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
                 Reiziger reiziger = new ReizigerDAOsql(connection, null).findById(rs.getInt("reiziger_id"));
-                OVChipkaartH ovChipkaart = new OVChipkaartH(
+                OVChipkaart ovChipkaart = new OVChipkaart(
                         rs.getDate("geldig_tot"),
                         rs.getInt("klasse"),
                         rs.getDouble("saldo"),
@@ -99,15 +99,15 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
     }
 
     @Override
-    public List<OVChipkaartH> findByReiziger(Reiziger reiziger) {
-        List<OVChipkaartH> ovChipkaarten = new ArrayList<>();
+    public List<OVChipkaart> findByReiziger(Reiziger reiziger) {
+        List<OVChipkaart> ovChipkaarten = new ArrayList<>();
         try {
             String query = "SELECT * FROM ov_chipkaart WHERE reiziger_id = ?";
             PreparedStatement pst = connection.prepareStatement(query);
             pst.setInt(1, reiziger.getId());
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                OVChipkaartH ovChipkaart = new OVChipkaartH(
+                OVChipkaart ovChipkaart = new OVChipkaart(
                         rs.getDate("geldig_tot"),
                         rs.getInt("klasse"),
                         rs.getDouble("saldo"),
@@ -125,15 +125,15 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
     }
 
     @Override
-    public List<OVChipkaartH> findAll() {
-        List<OVChipkaartH> ovChipkaarten = new ArrayList<>();
+    public List<OVChipkaart> findAll() {
+        List<OVChipkaart> ovChipkaarten = new ArrayList<>();
         try {
             String query = "SELECT * FROM ov_chipkaart";
             PreparedStatement pst = connection.prepareStatement(query);
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
                 Reiziger reiziger = new ReizigerDAOsql(connection, null).findById(rs.getInt("reiziger_id"));
-                OVChipkaartH ovChipkaart = new OVChipkaartH(
+                OVChipkaart ovChipkaart = new OVChipkaart(
                         rs.getDate("geldig_tot"),
                         rs.getInt("klasse"),
                         rs.getDouble("saldo"),

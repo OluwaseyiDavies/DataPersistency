@@ -84,8 +84,8 @@ public class OVChipkaart {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof nl.hu.dp.P4.domain.OVChipkaartH)) return false;
-        nl.hu.dp.P4.domain.OVChipkaartH that = (nl.hu.dp.P4.domain.OVChipkaartH) o;
+        if (!(o instanceof nl.hu.dp.P4.domain.OVChipkaart)) return false;
+        nl.hu.dp.P4.domain.OVChipkaart that = (nl.hu.dp.P4.domain.OVChipkaart) o;
         return kaartNummer == that.kaartNummer;
     }
 
