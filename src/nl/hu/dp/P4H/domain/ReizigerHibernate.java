@@ -1,4 +1,4 @@
-package nl.hu.dp.P4.domain;
+package nl.hu.dp.P4H.domain;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "reiziger")
-public class Reiziger {
+public class ReizigerHibernate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,14 +28,14 @@ public class Reiziger {
     private LocalDate geboortedatum;
 
     @OneToOne(mappedBy = "reiziger", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Adres adres;
+    private AdresHibernate adres;
 
     @OneToMany(mappedBy = "reiziger", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<nl.hu.dp.P4.domain.OVChipkaartH> ovChipkaarten = new ArrayList<>();
+    private List<OVChipkaartHibernate> ovChipkaarten = new ArrayList<>();
 
-    public Reiziger() {}
+    public ReizigerHibernate() {}
 
-    public Reiziger(String voorletters, String tussenvoegsel, String achternaam, LocalDate geboortedatum) {
+    public ReizigerHibernate(String voorletters, String tussenvoegsel, String achternaam, LocalDate geboortedatum) {
         this.voorletters = voorletters;
         this.tussenvoegsel = tussenvoegsel;
         this.achternaam = achternaam;
@@ -43,6 +43,7 @@ public class Reiziger {
     }
 
     // Getters en Setters
+
     public int getId() {
         return id;
     }
@@ -83,11 +84,11 @@ public class Reiziger {
         this.geboortedatum = geboortedatum;
     }
 
-    public Adres getAdres() {
+    public AdresHibernate getAdres() {
         return adres;
     }
 
-    public void setAdres(Adres adres) {
+    public void setAdres(AdresHibernate adres) {
         this.adres = adres;
         if (adres.getReiziger() != this) {
             adres.setReiziger(this);
@@ -135,8 +136,8 @@ public class Reiziger {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Reiziger)) return false;
-        Reiziger reiziger = (Reiziger) o;
+        if (!(o instanceof ReizigerHibernate)) return false;
+        ReizigerHibernate reiziger = (ReizigerHibernate) o;
         return id == reiziger.id;
     }
 

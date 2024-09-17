@@ -1,12 +1,12 @@
-package nl.hu.dp.P4.domain;
+package nl.hu.dp.P4H.domain;
 
-import java.util.Date;
 import javax.persistence.*;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
 @Table(name = "ov_chipkaart")
-public class OVChipkaart {
+public class OVChipkaartHibernate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,20 +22,19 @@ public class OVChipkaart {
     @Column(name = "saldo")
     private double saldo;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reiziger_id")
-    private Reiziger reiziger;
+    private ReizigerHibernate reiziger;
 
-    public OVChipkaart() {}
+    public OVChipkaartHibernate() {}
 
-    public OVChipkaart(Date geldigTot, int klasse, double saldo, Reiziger reiziger) {
+    public OVChipkaartHibernate(Date geldigTot, int klasse, double saldo, ReizigerHibernate reiziger) {
         this.geldigTot = geldigTot;
         this.klasse = klasse;
         this.saldo = saldo;
         this.reiziger = reiziger;
     }
 
-    // Getters en Setters
     public int getKaartNummer() {
         return kaartNummer;
     }
@@ -68,24 +67,29 @@ public class OVChipkaart {
         this.saldo = saldo;
     }
 
-    public Reiziger getReiziger() {
+    public ReizigerHibernate getReiziger() {
         return reiziger;
     }
 
-    public void setReiziger(Reiziger reiziger) {
+    public void setReiziger(ReizigerHibernate reiziger) {
         this.reiziger = reiziger;
     }
 
     @Override
     public String toString() {
-        return "OVChipkaart {#" + kaartNummer + ": geldig tot " + geldigTot + ", klasse " + klasse + ", saldo " + saldo + "}";
+        return "OVChipkaart {" +
+                "kaartNummer=" + kaartNummer +
+                ", geldigTot=" + geldigTot +
+                ", klasse=" + klasse +
+                ", saldo=" + saldo +
+                "}";
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof nl.hu.dp.P4.domain.OVChipkaartH)) return false;
-        nl.hu.dp.P4.domain.OVChipkaartH that = (nl.hu.dp.P4.domain.OVChipkaartH) o;
+        if (!(o instanceof OVChipkaartHibernate)) return false;
+        OVChipkaartHibernate that = (OVChipkaartHibernate) o;
         return kaartNummer == that.kaartNummer;
     }
 
