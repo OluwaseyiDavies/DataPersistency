@@ -95,20 +95,20 @@ public class ReizigerHibernate {
         }
     }
 
-    public List<nl.hu.dp.P4.domain.OVChipkaartH> getOvChipkaarten() {
+    public List<nl.hu.dp.P4H.domain.OVChipkaartHibernate> getOvChipkaarten() {
         return ovChipkaarten;
     }
 
-    public void setOvChipkaarten(List<nl.hu.dp.P4.domain.OVChipkaartH> ovChipkaarten) {
+    public void setOvChipkaarten(List<nl.hu.dp.P4H.domain.OVChipkaartHibernate> ovChipkaarten) {
         this.ovChipkaarten = ovChipkaarten;
-        for (nl.hu.dp.P4.domain.OVChipkaartH ovChipkaart : ovChipkaarten) {
+        for (nl.hu.dp.P4H.domain.OVChipkaartHibernate ovChipkaart : ovChipkaarten) {
             if (ovChipkaart.getReiziger() != this) {
                 ovChipkaart.setReiziger(this);
             }
         }
     }
 
-    public void addOVChipkaart(nl.hu.dp.P4.domain.OVChipkaartH ovChipkaart) {
+    public void addOVChipkaart(nl.hu.dp.P4H.domain.OVChipkaartHibernate ovChipkaart) {
         this.ovChipkaarten.add(ovChipkaart);
         ovChipkaart.setReiziger(this);
     }

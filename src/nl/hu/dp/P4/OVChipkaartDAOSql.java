@@ -1,17 +1,15 @@
 package nl.hu.dp.P4;
-
+import nl.hu.dp.P4.AdresDAO;
 import nl.hu.dp.P4.domain.OVChipkaart;
 import nl.hu.dp.P4.domain.Reiziger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class OVChipkaartDAOPsql implements OVChipkaartDAO {
     private Connection connection;
+    private AdresDAO adresDAO;
 
     public OVChipkaartDAOPsql(Connection connection) {
         this.connection = connection;
@@ -23,7 +21,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
             String query = "INSERT INTO ov_chipkaart (kaart_nummer, geldig_tot, klasse, saldo, reiziger_id) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement pst = connection.prepareStatement(query);
             pst.setInt(1, ovChipkaart.getKaartNummer());
-            pst.setDate(2, new java.sql.Date(ovChipkaart.getGeldigTot().getTime()));
+            pst.setDate(2, new Date(ovChipkaart.getGeldigTot().getTime()));
             pst.setInt(3, ovChipkaart.getKlasse());
             pst.setDouble(4, ovChipkaart.getSaldo());
             pst.setInt(5, ovChipkaart.getReiziger().getId());
@@ -41,7 +39,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
         try {
             String query = "UPDATE ov_chipkaart SET geldig_tot = ?, klasse = ?, saldo = ?, reiziger_id = ? WHERE kaart_nummer = ?";
             PreparedStatement pst = connection.prepareStatement(query);
-            pst.setDate(1, new java.sql.Date(ovChipkaart.getGeldigTot().getTime()));
+            pst.setDate(1, new Date(ovChipkaart.getGeldigTot().getTime()));
             pst.setInt(2, ovChipkaart.getKlasse());
             pst.setDouble(3, ovChipkaart.getSaldo());
             pst.setInt(4, ovChipkaart.getReiziger().getId());
@@ -78,12 +76,14 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
             pst.setInt(1, kaartNummer);
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
-                Reiziger reiziger = new ReizigerDAOsql(connection, null).findById(rs.getInt("reiziger_id"));
+                ReizigerDAOsql reizigerDAOSql = new ReizigerDAOsql(connection, this.adresDAO);
+                Reiziger reiziger1 = reizigerDAOSql.findById(5);
+
                 OVChipkaart ovChipkaart = new OVChipkaart(
                         rs.getDate("geldig_tot"),
                         rs.getInt("klasse"),
                         rs.getDouble("saldo"),
-                        reiziger
+//                        reiziger
                 );
                 ovChipkaart.setKaartNummer(rs.getInt("kaart_nummer"));
                 rs.close();
@@ -132,12 +132,15 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
             PreparedStatement pst = connection.prepareStatement(query);
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                Reiziger reiziger = new ReizigerDAOsql(connection, null).findById(rs.getInt("reiziger_id"));
+                ReizigerDAOsql reiziger = new ReizigerDAOsql(connection, this.adresDAO);
+//               Reiziger reiziger1 =  reiziger.findById(id van reiziger);
+
                 OVChipkaart ovChipkaart = new OVChipkaart(
                         rs.getDate("geldig_tot"),
                         rs.getInt("klasse"),
                         rs.getDouble("saldo"),
-                        reiziger
+//                        reiziger
+
                 );
                 ovChipkaart.setKaartNummer(rs.getInt("kaart_nummer"));
                 ovChipkaarten.add(ovChipkaart);

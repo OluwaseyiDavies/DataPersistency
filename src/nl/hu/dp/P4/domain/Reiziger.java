@@ -1,7 +1,7 @@
 package nl.hu.dp.P4.domain;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,7 +25,7 @@ public class Reiziger {
     private String achternaam;
 
     @Column(name = "geboortedatum")
-    private LocalDate geboortedatum;
+    private Date geboortedatum;
 
     @OneToOne(mappedBy = "reiziger", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Adres adres;
@@ -35,11 +35,19 @@ public class Reiziger {
 
     public Reiziger() {}
 
-    public Reiziger(String voorletters, String tussenvoegsel, String achternaam, LocalDate geboortedatum) {
+    public Reiziger(String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum) {
         this.voorletters = voorletters;
         this.tussenvoegsel = tussenvoegsel;
         this.achternaam = achternaam;
         this.geboortedatum = geboortedatum;
+    }
+
+    public Reiziger(int reizigerId, String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum) {
+    this.id = reizigerId;
+    this.voorletters = voorletters;
+    this.tussenvoegsel = tussenvoegsel;
+    this.achternaam = achternaam;
+    this.geboortedatum = geboortedatum;
     }
 
     // Getters en Setters
@@ -75,11 +83,11 @@ public class Reiziger {
         this.achternaam = achternaam;
     }
 
-    public LocalDate getGeboortedatum() {
+    public java.sql.Date getGeboortedatum() {
         return geboortedatum;
     }
 
-    public void setGeboortedatum(LocalDate geboortedatum) {
+    public void setGeboortedatum(Date geboortedatum) {
         this.geboortedatum = geboortedatum;
     }
 

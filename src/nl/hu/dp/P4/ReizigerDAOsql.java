@@ -1,9 +1,7 @@
 package nl.hu.dp.P4;
 
-import nl.hu.dp.P2.ReizigerDAO;
-import nl.hu.dp.P2.domain.Reiziger;
-import nl.hu.dp.P3.AdresDAO;
-import nl.hu.dp.P3.domain.Adres;
+import nl.hu.dp.P4.domain.Reiziger;
+import nl.hu.dp.P4.domain.Adres;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -25,7 +23,7 @@ public class ReizigerDAOsql implements ReizigerDAO {
             PreparedStatement pst = connection.prepareStatement(query);
             pst.setInt(1, reiziger.getId());
             pst.setString(2, reiziger.getVoorletters());
-            pst.setString(3, reiziger.getTussenvoegesel());
+            pst.setString(3, reiziger.getTussenvoegsel());
             pst.setString(4, reiziger.getAchternaam());
             pst.setDate(5, reiziger.getGeboortedatum());
             pst.executeUpdate();
@@ -49,7 +47,7 @@ public class ReizigerDAOsql implements ReizigerDAO {
             String query = "UPDATE reiziger SET voorletters = ?, tussenvoegsel = ?, achternaam = ?, geboortedatum = ? WHERE reiziger_id = ?";
             PreparedStatement pst = connection.prepareStatement(query);
             pst.setString(1, reiziger.getVoorletters());
-            pst.setString(2, reiziger.getTussenvoegesel());
+            pst.setString(2, reiziger.getTussenvoegsel());
             pst.setString(3, reiziger.getAchternaam());
             pst.setDate(4, reiziger.getGeboortedatum());
             pst.setInt(5, reiziger.getId());

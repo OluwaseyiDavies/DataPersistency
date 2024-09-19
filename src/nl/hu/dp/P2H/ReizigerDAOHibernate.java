@@ -7,6 +7,7 @@ import java.util.List;
 
 public class ReizigerDAOHibernate implements ReizigerDAO {
     private Session session;
+    private Transaction transaction;
 
     public ReizigerDAOHibernate(Session session) {
         this.session = session;
