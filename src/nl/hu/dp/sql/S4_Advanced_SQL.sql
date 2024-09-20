@@ -31,6 +31,14 @@
 -- geboren zijn, en trainer of verkoper zijn.
 -- DROP VIEW IF EXISTS s4_1; CREATE OR REPLACE VIEW s4_1 AS                                                     -- [TEST]
 
+select
+    m.mnr as medewerker_nummer,
+    m.functie,
+    m.gbdatum as geboortedatum
+from
+    medewerkers m
+where
+    m.gbdatum < '1980-01-01' and (m.functie = 'TRAINER' or m.functie = 'VERKOPER')
 
 -- S4.2.
 -- Geef de naam van de medewerkers met een tussenvoegsel (b.v. 'van der').
