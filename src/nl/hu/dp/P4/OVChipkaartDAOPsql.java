@@ -1,5 +1,5 @@
 package nl.hu.dp.P4;
-import nl.hu.dp.P4.AdresDAO;
+
 import nl.hu.dp.P4.domain.OVChipkaart;
 import nl.hu.dp.P4.domain.Reiziger;
 
@@ -76,14 +76,13 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
             pst.setInt(1, kaartNummer);
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
-                ReizigerDAOsql reizigerDAOSql = new ReizigerDAOsql(connection, this.adresDAO);
                 Reiziger reiziger1 = reizigerDAOSql.findById(5);
 
                 OVChipkaart ovChipkaart = new OVChipkaart(
                         rs.getDate("geldig_tot"),
                         rs.getInt("klasse"),
                         rs.getDouble("saldo"),
-//                        reiziger
+                        reiziger1
                 );
                 ovChipkaart.setKaartNummer(rs.getInt("kaart_nummer"));
                 rs.close();
@@ -133,13 +132,13 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO {
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
                 ReizigerDAOsql reiziger = new ReizigerDAOsql(connection, this.adresDAO);
-//               Reiziger reiziger1 =  reiziger.findById(id van reiziger);
+               Reiziger reiziger1 =  reiziger.findById(5);
 
                 OVChipkaart ovChipkaart = new OVChipkaart(
                         rs.getDate("geldig_tot"),
                         rs.getInt("klasse"),
                         rs.getDouble("saldo"),
-//                        reiziger
+                        reiziger1
 
                 );
                 ovChipkaart.setKaartNummer(rs.getInt("kaart_nummer"));

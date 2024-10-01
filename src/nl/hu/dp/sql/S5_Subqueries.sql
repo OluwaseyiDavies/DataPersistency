@@ -50,7 +50,6 @@ group by
 -- zijn verbonden.
 -- DROP VIEW IF EXISTS s5_2; CREATE OR REPLACE VIEW s5_2 AS                                                     -- [TEST]
 
-
 select
     m.afd as afdeling,
     m.mnr as medewerker_nummer
@@ -58,6 +57,8 @@ from
     medewerkers m
         join
     afdelingen a on m.afd = a.anr
+where
+    m.afd not in (30)
 group by
     m.afd, m.mnr
 
@@ -66,6 +67,17 @@ group by
 -- gevolgd.
 -- DROP VIEW IF EXISTS s5_3; CREATE OR REPLACE VIEW s5_3 AS                                                     -- [TEST]
 
+select
+    i.cursus as cursus,
+    i.cursist as medewerkers_nummer
+from
+    inschrijvingen i
+        join
+    medewerkers m on i.cursist = m.mnr
+where
+    i.cursus not in ('JAV')
+group by
+    i.cursus, i.cursist
 
 -- S5.4.
 -- a. Welke medewerkers hebben ondergeschikten? Geef hun naam.
@@ -73,6 +85,22 @@ group by
 
 -- b. En welke medewerkers hebben geen ondergeschikten? Geef wederom de naam.
 -- DROP VIEW IF EXISTS s5_4b; CREATE OR REPLACE VIEW s5_4b AS                                                   -- [TEST]
+
+-- a)
+select
+    naam as medewerker_naam
+from
+    medewerkers
+where
+    functie = 'MANAGER';
+
+-- b)
+select
+    naam as medewerker_naam
+from
+    medewerkers
+where
+    functie <> 'MANAGER';
 
 
 -- S5.5.
@@ -88,9 +116,7 @@ from
         join
     cursussen c on u.cursus = c.code
 where
-    -- u.cursus = 'BLD'
-    -- and
-    extract(year from u.begindatum) = 2020
+    c.type = 'BLD' and extract(year from u.begindatum) = 2020
 group by
     u.cursus, u.begindatum
 
@@ -118,29 +144,36 @@ order by
 -- algemene ('ALG') cursus hun eigen chef als cursist hebben gehad.
 -- DROP VIEW IF EXISTS s5_7; CREATE OR REPLACE VIEW s5_7 AS                                                     -- [TEST]
 
-select * from afdelingen
-select * from cursussen
-select * from historie
-select * from inschrijvingen
-select * from medewerkers
-select * from schalen
-select * from uitvoeringen
-
 select
     m.voorl as voorletter_s,
     m.naam as achternaam
 from
-    cursussen c on
-join
-
-
-
-
+    medewerkers m
+        join
+    uitvoeringen u on m.mnr = u.docent
+        join
+    cursussen c on u.cursus = c.code
+        join
+    inschrijvingen i on u.cursus = i.cursus
+        join
+    medewerkers chef on  i.cursist = chef.mnr
 where
+    m.functie = 'TRAINER'
+  and c.type = 'ALG'
+  and chef.mnr = m.mnr
 
 -- S5.8.
 -- Geef de naam van de medewerkers die nog nooit een cursus hebben gegeven.
 -- DROP VIEW IF EXISTS s5_8; CREATE OR REPLACE VIEW s5_8 AS                                                     -- [TEST]
+
+select
+    m.naam as medewerker_naam
+from
+    medewerkers m
+left join
+    uitvoeringen u on m.mnr = u.docent
+where
+    u.docent is null;
 
 
 

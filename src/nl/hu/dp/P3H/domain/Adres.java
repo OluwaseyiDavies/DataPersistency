@@ -1,6 +1,6 @@
 package nl.hu.dp.P3H.domain;
 
-import nl.hu.dp.P2.domain.Reiziger;
+import nl.hu.dp.P3H.domain.Reiziger;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -23,7 +23,7 @@ public class Adres {
     @Column(name = "woonplaats")
     private String woonplaats;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "reiziger_id")
     private Reiziger reiziger;
 

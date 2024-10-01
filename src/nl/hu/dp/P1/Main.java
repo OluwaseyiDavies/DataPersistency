@@ -1,11 +1,11 @@
 package nl.hu.dp.P1;
 
 import nl.hu.dp.P3.AdresDAO;
-import nl.hu.dp.P2.AdresDAOPsql;
-import nl.hu.dp.P2.ReizigerDAO;
-import nl.hu.dp.P2.ReizigerDAOsql;
+import nl.hu.dp.P3.ReizigerDAO;
+import nl.hu.dp.P3.ReizigerDAOsql;
 import nl.hu.dp.P3.domain.Adres;
-import nl.hu.dp.P2.domain.Reiziger;
+import nl.hu.dp.P3.domain.Reiziger;
+import nl.hu.dp.P3.AdresDAOsql;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -19,7 +19,7 @@ public class Main {
     public static void main(String[] args) throws SQLException {
         try {
             getConnection();
-            AdresDAO adresDAO = new AdresDAOPsql(connection);
+            AdresDAO adresDAO = new AdresDAOsql(connection);
             ReizigerDAO reizigerDAO = new ReizigerDAOsql(connection, adresDAO);
             testReizigersDAO(reizigerDAO);
         } finally {
@@ -30,7 +30,7 @@ public class Main {
     private static Connection getConnection() throws SQLException {
         if (connection == null) {
             String url =
-                    "jdbc:postgresql://localhost:5432/ovchip?user=postgres&password=";
+                    "jdbc:postgresql://localhost:5432/ovchip?user=postgres&password=SDavies2003!";
             connection = DriverManager.getConnection(url);
             System.out.println("Connection established");
         }
@@ -56,8 +56,8 @@ public class Main {
 
         // Een nieuwe reiziger en adres aanmaken en opslaan
         String gbdatum = "2002-09-17";
-        Reiziger gerrit = new Reiziger(6, "G.", "van", "Rijn", Date.valueOf(gbdatum));
-        Adres adresGerrit = new Adres(6, "37", "Langegracht", "Utrecht", gerrit);
+        Reiziger gerrit = new Reiziger(6, "O.", "Oluwatobi", "Davies", Date.valueOf(gbdatum));
+        Adres adresGerrit = new Adres(6, "8232RV","1", "Lubeckstraat", "Lelystad", gerrit);
         gerrit.setAdres(adresGerrit);
 
         System.out.print("[Test] Eerst " + reizigers.size() + " reizigers, na ReizigerDAO.save() ");
