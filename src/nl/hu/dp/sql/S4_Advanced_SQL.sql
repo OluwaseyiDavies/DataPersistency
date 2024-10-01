@@ -130,8 +130,8 @@ from
 
 select
     count(m.mnr) as aantal_medewerkers,
-    avg(m.comm) as commissie_medewerkers,
-    avg(case when m.functie = 'VERKOPER' then m.comm end) as commissie_verkopers
+    avg(coalesce(m.comm, 0)) as commissie_medewerkers,
+    avg(case when m.functie = 'VERKOPER' then coalesce(m.comm, 0) end) as commissie_verkopers
 from
     medewerkers m
 
