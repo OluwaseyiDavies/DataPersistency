@@ -56,7 +56,7 @@ from
 join
     medewerkers cursist on i.cursist = cursist.mnr
 join
-    uitvoeringen u on i.cursus = u.cursus
+    uitvoeringen u on i.cursus = u.cursus and i.begindatum = u.begindatum
 join
     medewerkers docent on u.docent = docent.mnr
 where
