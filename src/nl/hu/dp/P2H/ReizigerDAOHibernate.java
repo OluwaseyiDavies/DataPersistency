@@ -1,70 +1,14 @@
 package nl.hu.dp.P2H;
 
-import nl.hu.dp.P2H.domain.Reiziger;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
+import java.time.LocalDate;
 import java.util.List;
+import nl.hu.dp.P2H.domain.Reiziger;
 
-public class ReizigerDAOHibernate implements ReizigerDAO {
-    private Session session;
-    private Transaction transaction;
-
-    public ReizigerDAOHibernate(Session session) {
-        this.session = session;
-    }
-
-    @Override
-    public boolean save(Reiziger reiziger) {
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            session.save(reiziger);
-            transaction.commit();
-            return true;
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(Reiziger reiziger) {
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            session.update(reiziger);
-            transaction.commit();
-            return true;
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(Reiziger reiziger) {  // Hier is de public modifier toegevoegd
-        Transaction transaction = null;
-        try {
-            transaction = session.beginTransaction();
-            session.delete(reiziger);
-            transaction.commit();
-            return true;
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public Reiziger findById(int id) {
-        return session.get(Reiziger.class, id);
-    }
-
-    @Override
-    public List<Reiziger> findAll() {
-        return session.createQuery("FROM Reiziger", Reiziger.class).list();
-    }
+public interface ReizigerDAOHibernate {
+    boolean save(Reiziger reiziger);
+    boolean update(Reiziger reiziger);
+    boolean delete(Reiziger reiziger);
+    Reiziger findByReiziger_id(int reiziger_id);
+    List<Reiziger> findByGbdatum(LocalDate gbdatum);
+    List<Reiziger> findAll();
 }

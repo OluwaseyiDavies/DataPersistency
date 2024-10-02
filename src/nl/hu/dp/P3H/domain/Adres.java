@@ -1,9 +1,6 @@
 package nl.hu.dp.P3H.domain;
 
-import nl.hu.dp.P3H.domain.Reiziger;
-
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "adres")
@@ -11,33 +8,47 @@ public class Adres {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "adres_id")
-    private int id;
+    private int adres_id;
 
-    @Column(name = "huisnummer")
+    @Column(name = "postcode", nullable = false)
+    private String postcode;
+
+    @Column(name = "huisnummer", nullable = false)
     private String huisnummer;
 
-    @Column(name = "straat")
+    @Column(name = "straat", nullable = false)
     private String straat;
 
-    @Column(name = "woonplaats")
+    @Column(name = "woonplaats", nullable = false)
     private String woonplaats;
 
-    @OneToOne
-    @JoinColumn(name = "reiziger_id")
+    @OneToOne(mappedBy = "adres")
     private Reiziger reiziger;
 
     public Adres() {}
 
-    public Adres(String huisnummer, String straat, String woonplaats, Reiziger reiziger) {
+    public Adres(int adres_id, String postcode, String huisnummer, String straat, String woonplaats) {
+        this.adres_id = adres_id;
+        this.postcode = postcode;
         this.huisnummer = huisnummer;
         this.straat = straat;
         this.woonplaats = woonplaats;
-        this.reiziger = reiziger;
     }
 
-    public int getId() {
-        return id;
+    public int getAdres_id() {
+        return adres_id;
+    }
+
+    public void setAdres_id(int adres_id) {
+        this.adres_id = adres_id;
+    }
+
+    public String getPostcode() {
+        return postcode;
+    }
+
+    public void setPostcode(String postcode) {
+        this.postcode = postcode;
     }
 
     public String getHuisnummer() {
@@ -74,19 +85,7 @@ public class Adres {
 
     @Override
     public String toString() {
-        return "Adres {#" + id + " " + huisnummer + ", " + straat + ", " + woonplaats + ", " + reiziger + "}";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Adres)) return false;
-        Adres adres = (Adres) o;
-        return id == adres.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+        return String.format("Adres {id=%d, postcode='%s', huisnummer='%s', straat='%s', woonplaats='%s', reiziger='%s'}",
+                adres_id, postcode, huisnummer, straat, woonplaats, reiziger);
     }
 }

@@ -1,7 +1,9 @@
-package nl.hu.dp.P3H.domain;
+package nl.hu.dp.P4H.domain;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "reiziger")
@@ -14,7 +16,7 @@ public class Reiziger {
     @Column(name = "voorletters", nullable = false)
     private String voorletters;
 
-    @Column(name = "tussenvoegsel", nullable = true)
+    @Column(name = "tussenvoegsel", nullable = false)
     private String tussenvoegsel;
 
     @Column(name = "achternaam", nullable = false)
@@ -23,9 +25,8 @@ public class Reiziger {
     @Column(name = "geboortedatum", nullable = false)
     private LocalDate geboortedatum;
 
-    @OneToOne
-    @JoinColumn(name = "adres_id")
-    private Adres adres;
+    @OneToMany (mappedBy = "reiziger", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OVChipkaart> ovChipkaarten = new ArrayList<>();
 
     public Reiziger() {}
 
@@ -77,17 +78,18 @@ public class Reiziger {
         this.geboortedatum = geboortedatum;
     }
 
-    public Adres getAdres() {
-        return adres;
+    public List<OVChipkaart> getOvChipkaart() {
+        return ovChipkaarten;
     }
 
-    public void setAdres(Adres adres) {
-        this.adres = adres;
+    public void addOVChipkaart(OVChipkaart ovChipkaart) {
+        ovChipkaarten.add(ovChipkaart);
+        ovChipkaart.setReiziger(this);
     }
 
     @Override
     public String toString() {
-        return String.format("Reiziger {reiziger_id=%d, voorletters='%s', tussenvoegsel='%s', achternaam='%s', geboortedatum='%s', adres='%s'}",
-                reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum, adres);
+        return String.format("Reiziger {reiziger_id=%d, voorletters='%s', tussenvoegsel='%s', achternaam='%s', geboortedatum='%s', ovChipkaarten='%s'}",
+                reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum, ovChipkaarten.size());
     }
 }

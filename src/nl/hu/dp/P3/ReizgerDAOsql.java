@@ -1,21 +1,17 @@
 package nl.hu.dp.P3;
 
 import nl.hu.dp.P3.domain.Reiziger;
-import nl.hu.dp.P3.domain.Adres;
-import nl.hu.dp.P4.OVChipkaartDAO;
-
 import java.sql.*;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ReizigerDAOsql implements ReizigerDAO {
+public class ReizgerDAOsql implements ReizigerDAO{
     private Connection connection;
-    private AdresDAO adresDAO;
-    private OVChipkaartDAO ovChipkaartDAO;
 
-    public ReizigerDAOsql(Connection connection, AdresDAO adresDAO) {
+    public ReizgerDAOsql(Connection connection) {
         this.connection = connection;
-        this.adresDAO = adresDAO;
     }
 
     @Override
@@ -23,21 +19,19 @@ public class ReizigerDAOsql implements ReizigerDAO {
         try {
             String query = "INSERT INTO reiziger (reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement pst = connection.prepareStatement(query);
-            pst.setInt(1, reiziger.getId());
+            pst.setInt(1, reiziger.getReiziger_id());
             pst.setString(2, reiziger.getVoorletters());
-            pst.setString(3, reiziger.getTussenvoegesel());
+            pst.setString(3, reiziger.getTussenvoegsel());
             pst.setString(4, reiziger.getAchternaam());
             pst.setDate(5, reiziger.getGeboortedatum());
-            pst.setInt(5, reiziger.getAdres_id());
             pst.executeUpdate();
-            pst.close();
 
-            Adres adres = adresDAO.findById(reiziger.getAdres_id());
-
-            if (adres != null) {
-                adresDAO.save(adres);
+            if (reiziger.getAdres() != null) {
+                AdresDAOsql adresDAOsql = new AdresDAOsql(connection, this);
+                adresDAOsql.save(reiziger.getAdres());
             }
 
+            pst.close();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -48,21 +42,15 @@ public class ReizigerDAOsql implements ReizigerDAO {
     @Override
     public boolean update(Reiziger reiziger) {
         try {
-            String query = "UPDATE reiziger SET voorletters = ?, tussenvoegsel = ?, achternaam = ?, geboortedatum = ? WHERE reiziger_id = ?";
+            String query = "UPDATE reiziger SET voorletters = ?, tussenvoegesel = ?, achternaam = ?, geboortedatum = ? WHERE reiziger_id = ?";
             PreparedStatement pst = connection.prepareStatement(query);
-            pst.setString(1, reiziger.getVoorletters());
-            pst.setString(2, reiziger.getTussenvoegesel());
-            pst.setString(3, reiziger.getAchternaam());
-            pst.setDate(4, reiziger.getGeboortedatum());
-            pst.setInt(5, reiziger.getId());
+            pst.setInt(1, reiziger.getReiziger_id());
+            pst.setString(2, reiziger.getVoorletters());
+            pst.setString(3, reiziger.getTussenvoegsel());
+            pst.setString(4, reiziger.getAchternaam());
+            pst.setDate(5, reiziger.getGeboortedatum());
             pst.executeUpdate();
             pst.close();
-
-            // Update het bijbehorende adres
-            if (reiziger.getAdres() != null) {
-                adresDAO.update(reiziger.getAdres());
-            }
-
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -73,14 +61,9 @@ public class ReizigerDAOsql implements ReizigerDAO {
     @Override
     public boolean delete(Reiziger reiziger) {
         try {
-            // Verwijder eerst het bijbehorende adres
-            if (reiziger.getAdres() != null) {
-                adresDAO.delete(reiziger.getAdres());
-            }
-
             String query = "DELETE FROM reiziger WHERE reiziger_id = ?";
             PreparedStatement pst = connection.prepareStatement(query);
-            pst.setInt(1, reiziger.getId());
+            pst.setInt(1, reiziger.getReiziger_id());
             pst.executeUpdate();
             pst.close();
             return true;
@@ -91,11 +74,11 @@ public class ReizigerDAOsql implements ReizigerDAO {
     }
 
     @Override
-    public Reiziger findById(int id) {
+    public Reiziger findByReiziger_id(int reiziger_id) {
         try {
             String query = "SELECT * FROM reiziger WHERE reiziger_id = ?";
             PreparedStatement pst = connection.prepareStatement(query);
-            pst.setInt(1, id);
+            pst.setInt(1, reiziger_id);
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
                 Reiziger reiziger = new Reiziger(rs.getInt("reiziger_id"),
@@ -103,11 +86,6 @@ public class ReizigerDAOsql implements ReizigerDAO {
                         rs.getString("tussenvoegsel"),
                         rs.getString("achternaam"),
                         rs.getDate("geboortedatum"));
-
-                // Haal het bijbehorende adres op
-                Adres adres = adresDAO.findByReiziger(reiziger);
-                reiziger.setAdres(adres);
-
                 rs.close();
                 pst.close();
                 return reiziger;
@@ -121,53 +99,19 @@ public class ReizigerDAOsql implements ReizigerDAO {
     }
 
     @Override
-    public List<Reiziger> findAll() {
-        List<Reiziger> reizigers = new ArrayList<>();
-        try {
-            String query = "SELECT * FROM reiziger";
-            Statement st = connection.createStatement();
-            ResultSet rs = st.executeQuery(query);
-            while (rs.next()) {
-                Reiziger reiziger = new Reiziger(rs.getInt("reiziger_id"),
-                        rs.getString("voorletters"),
-                        rs.getString("tussenvoegsel"),
-                        rs.getString("achternaam"),
-                        rs.getDate("geboortedatum"));
-
-                // Haal het bijbehorende adres op
-                Adres adres = adresDAO.findByReiziger(reiziger);
-                reiziger.setAdres(adres);
-
-                reizigers.add(reiziger);
-            }
-            rs.close();
-            st.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return reizigers;
-    }
-
-    @Override
-    public List<Reiziger> findByGbdatum(Date geboortedatum) {
+    public List<Reiziger> findByGbdatum(LocalDate datum) {
         List<Reiziger> reizigers = new ArrayList<>();
         try {
             String query = "SELECT * FROM reiziger WHERE geboortedatum = ?";
             PreparedStatement pst = connection.prepareStatement(query);
-            pst.setDate(1, geboortedatum);
+            pst.setDate(1, java.sql.Date.valueOf(datum));
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                Reiziger reiziger = new Reiziger(rs.getInt("reiziger_id"),
+                reizigers.add(new Reiziger(rs.getInt("reiziger_id"),
                         rs.getString("voorletters"),
                         rs.getString("tussenvoegsel"),
                         rs.getString("achternaam"),
-                        rs.getDate("geboortedatum"));
-
-                // Haal het bijbehorende adres op
-                Adres adres = adresDAO.findByReiziger(reiziger);
-                reiziger.setAdres(adres);
-
-                reizigers.add(reiziger);
+                        rs.getDate("geboortedatum")));
             }
             rs.close();
             pst.close();
@@ -176,4 +120,50 @@ public class ReizigerDAOsql implements ReizigerDAO {
         }
         return reizigers;
     }
+
+    @Override
+    public List<Reiziger> findAll() {
+        List<Reiziger> reizigers = new ArrayList<>();
+        try {
+            String query = "SELECT * FROM reiziger";
+            Statement st = connection.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            while (rs.next()) {
+                reizigers.add(new Reiziger(rs.getInt("reiziger_id"),
+                        rs.getString("voorletters"),
+                        rs.getString("tussenvoegsel"),
+                        rs.getString("achternaam"),
+                        rs.getDate("geboortedatum")));
+            }
+            rs.close();
+            st.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return reizigers;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -8,41 +8,38 @@ import java.time.LocalDate;
 public class Reiziger {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reiziger_id")
-    private int id;
+    @GeneratedValue(strategy = GenerationType.AUTO.IDENTITY)
+    private int reiziger_id;
 
-    @Column(name = "voorletters")
+    @Column(name = "voorletters", nullable = false)
     private String voorletters;
 
-    @Column(name = "tussenvoegsel")
+    @Column(name = "tussenvoegsel", nullable = false)
     private String tussenvoegsel;
 
-    @Column(name = "achternaam")
+    @Column(name = "achternaam", nullable = false)
     private String achternaam;
 
-    @Column(name = "geboortedatum")
+    @Column(name = "geboortedatum", nullable = false)
     private LocalDate geboortedatum;
 
-    // Default constructor is verplicht voor Hibernate
-    public Reiziger() {}
+    public Reiziger() {
+    }
 
-    public int Reiziger(int id, String voorletters, String tussenvoegsel, String achternaam, LocalDate geboortedatum) {
-        this.id = id;
+    public Reiziger(int reiziger_id, String voorletters, String tusssenvoegsel, String achternaam, LocalDate geboortedatum) {
+        this.reiziger_id = reiziger_id;
         this.voorletters = voorletters;
-        this.tussenvoegsel = tussenvoegsel;
+        this.tussenvoegsel = tusssenvoegsel;
         this.achternaam = achternaam;
         this.geboortedatum = geboortedatum;
-        return id;
     }
 
-    //getters en setters
-    public int getId() {
-        return id;
+    public int getReiziger_id() {
+        return reiziger_id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setReiziger_id(int reiziger_id) {
+        this.reiziger_id = reiziger_id;
     }
 
     public String getVoorletters() {
@@ -79,8 +76,12 @@ public class Reiziger {
 
     @Override
     public String toString() {
-        return "Reiziger {#" + id + ": " + voorletters + " " +
-                (tussenvoegsel != null? tussenvoegsel + " " : "") + achternaam +
-                ", geb. " + geboortedatum + "}";
+        return "Reiziger{" +
+                "reiziger_id=" + reiziger_id +
+                ", voorletters='" + voorletters + '\'' +
+                ", tussenvoegsel='" + tussenvoegsel + '\'' +
+                ", achternaam='" + achternaam + '\'' +
+                ", geboortedatum=" + geboortedatum +
+                '}';
     }
 }

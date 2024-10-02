@@ -3,32 +3,27 @@ package nl.hu.dp.P3.domain;
 import java.sql.Date;
 
 public class Reiziger {
-    private int id;
+    private int reiziger_id;
     private String voorletters;
-    private String tussenvoegesel;
+    private String tussenvoegsel;
     private String achternaam;
     private Date geboortedatum;
+    private Adres adres;
 
-    public int getAdres_id() {
-        return adres_id;
-    }
-
-    private int adres_id; // Nieuw attribuut voor associatie
-
-    public Reiziger(int id, String voorletters, String tussenvoegesel, String achternaam, Date geboortedatum) {
-        this.id = id;
+    public Reiziger(int id, String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum) {
+        this.reiziger_id = reiziger_id;
         this.voorletters = voorletters;
-        this.tussenvoegesel = tussenvoegesel;
+        this.tussenvoegsel = tussenvoegsel;
         this.achternaam = achternaam;
         this.geboortedatum = geboortedatum;
     }
 
-    public int getId() {
-        return id;
+    public int getReiziger_id() {
+        return reiziger_id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setReiziger_id(int id) {
+        this.reiziger_id = reiziger_id;
     }
 
     public String getVoorletters() {
@@ -39,12 +34,12 @@ public class Reiziger {
         this.voorletters = voorletters;
     }
 
-    public String getTussenvoegesel() {
-        return tussenvoegesel;
+    public String getTussenvoegsel() {
+        return tussenvoegsel;
     }
 
-    public void setTussenvoegesel(String tussenvoegesel) {
-        this.tussenvoegesel = tussenvoegesel;
+    public void setTussenvoegsel(String tussenvoegsel) {
+        this.tussenvoegsel = tussenvoegsel;
     }
 
     public String getAchternaam() {
@@ -63,15 +58,21 @@ public class Reiziger {
         this.geboortedatum = geboortedatum;
     }
 
+    public Adres getAdres() {
+        return adres;
+    }
+
+    public void setAdres(Adres adres) {
+        this.adres = adres;
+    }
+
     @Override
     public String toString() {
-        return "Reiziger{" +
-                "id=" + id +
-                ", voorletters='" + voorletters + '\'' +
-                ", tussenvoegesel='" + tussenvoegesel + '\'' +
-                ", achternaam='" + achternaam + '\'' +
-                ", geboortedatum=" + geboortedatum +
-                ", adres_id=" + adres_id +
-                '}';
+        String volledigeNaam = voorletters;
+        if (tussenvoegsel != null && !tussenvoegsel.isEmpty()) {
+            volledigeNaam += " " + tussenvoegsel;
+        }
+        volledigeNaam += " " + achternaam;
+        return "#" + reiziger_id + " " + volledigeNaam + " (" + geboortedatum + ")";
     }
 }

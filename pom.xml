@@ -70,7 +70,7 @@
                 <executions>
                     <execution>
                         <!-- Default configuration for running with: mvn clean javafx:run -->
-                        <id>default-cli</id>
+                        <reiziger_id>default-cli</reiziger_id>
                         <configuration>
                             <mainClass>domeinlaag.dp/domeinlaag.dp.HelloApplication</mainClass>
                             <launcher>app</launcher>
