@@ -28,7 +28,7 @@ public class Main {
     private static Connection getConnection() throws SQLException {
         if (connection == null) {
             String url =
-                    "jdbc:postgresql://localhost:5432/ovchip?user=postgres&password=SDavies2003!";
+                    "jdbc:postgresql://localhost:5432/ovchip?user=postgres&password=";
             connection = DriverManager.getConnection(url);
             System.out.println("Connection established");
         }
