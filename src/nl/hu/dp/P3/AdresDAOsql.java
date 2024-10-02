@@ -75,13 +75,14 @@ public class AdresDAOsql implements AdresDAO {
 
     @Override
     public Adres findByReiziger(Reiziger reiziger) {
+        Adres adres = null;
         try {
             String query = "SELECT * FROM adres WHERE reiziger_id=?";
             PreparedStatement pst = connection.prepareStatement(query);
             pst.setInt(1, reiziger.getReiziger_id());
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
-                Adres adres = new Adres(
+                 adres = new Adres(
                         rs.getInt("adres_id"),
                         rs.getString("postcode"),
                         rs.getString("huisnummer"),
@@ -89,16 +90,13 @@ public class AdresDAOsql implements AdresDAO {
                         rs.getString("woonplaats"),
                         reiziger
                 );
-                rs.close();
-                pst.close();
-                return adres;
             }
             rs.close();
             pst.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return adres;
     }
 
     @Override

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public class Reiziger {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int reiziger_id;
 
     @Column(name = "voorletters", nullable = false)

@@ -71,22 +71,3 @@ public class Adres {
                 adres_id, postcode, huisnummer, straat, woonplaats);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

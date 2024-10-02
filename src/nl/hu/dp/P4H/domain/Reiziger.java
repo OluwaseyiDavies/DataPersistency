@@ -25,7 +25,7 @@ public class Reiziger {
     @Column(name = "geboortedatum", nullable = false)
     private LocalDate geboortedatum;
 
-    @OneToMany (mappedBy = "reiziger", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany (mappedBy = "reiziger", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<OVChipkaart> ovChipkaarten = new ArrayList<>();
 
     public Reiziger() {}
