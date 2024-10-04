@@ -17,6 +17,11 @@ public class ReizigerDAOsql implements ReizigerDAO {
     @Override
     public boolean save(Reiziger reiziger) {
         try {
+            if (findByReiziger_id(reiziger.getReiziger_id()) != null) {
+                System.out.println("Reiziger met id" + reiziger.getReiziger_id());
+                return false;
+            }
+
             String query = "INSERT INTO reiziger (reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement pst = connection.prepareStatement(query);
             pst.setInt(1, reiziger.getReiziger_id());
