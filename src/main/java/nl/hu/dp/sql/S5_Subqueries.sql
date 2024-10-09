@@ -16,10 +16,10 @@
 -- Codeer je uitwerking onder de regel 'DROP VIEW ...' (bij een SELECT)
 -- of boven de regel 'ON CONFLICT DO NOTHING;' (bij een INSERT)
 -- Je kunt deze eigen query selecteren en los uitvoeren, en wijzigen tot
--- je tevreden bent.
+je tevreden bent.
 
 -- Vervolgens kun je je uitwerkingen testen door de testregels
--- (met [TEST] erachter) te activeren (haal hiervoor de commentaartekens
+-- (met [TEST] erachter) te activeren (haal hiervoor de decommentaartekens
 -- weg) en vervolgens het hele bestand uit te voeren. Hiervoor moet je de
 -- testsuite in de database hebben geladen (bedrijf_postgresql_test.sql).
 -- NB: niet alle opdrachten hebben testregels.
@@ -34,16 +34,17 @@
 -- DROP VIEW IF EXISTS s5_1; CREATE OR REPLACE VIEW s5_1 AS                                                     -- [TEST]
 
 select
-    i.cursist as medewerker_nummer,
-    i.cursus as cursus_code
+	i1.cursist as medewerker_nummer
 from
-    inschrijvingen i
-        join
-    medewerkers m on i.cursist = m.mnr
+	inschrijvingen i1
 where
-    i.cursus like 'JAV' or i.cursus like 'XML'
-group by
-    i.cursist, i.cursus
+	i1.cursus LIKE 'JAV'
+and exists (
+		select 1
+		from inschrijvingen i2
+		where i2.cursist = i1.cursist
+		and i2.cursus like 'XML'
+	)
 
 -- S5.2.
 -- Geef de nummers van alle medewerkers die niet aan de afdeling 'OPLEIDINGEN'
@@ -51,16 +52,16 @@ group by
 -- DROP VIEW IF EXISTS s5_2; CREATE OR REPLACE VIEW s5_2 AS                                                     -- [TEST]
 
 select
-    m.afd as afdeling,
-    m.mnr as medewerker_nummer
+    i1.cursist as medewerker_nummer
 from
-    medewerkers m
-        join
-    afdelingen a on m.afd = a.anr
+    inschrijvingen i1
 where
-    m.afd not in (30)
-group by
-    m.afd, m.mnr
+    not exists (
+        select 1
+        from inschrijvingen i2
+        where i2.cursist = i1.cursist
+          and i2.cursus = 'OPLEIDINGEN'
+    )
 
 -- S5.3.
 -- Geef de nummers van alle medewerkers die de Java-cursus niet hebben
@@ -68,16 +69,16 @@ group by
 -- DROP VIEW IF EXISTS s5_3; CREATE OR REPLACE VIEW s5_3 AS                                                     -- [TEST]
 
 select
-    i.cursus as cursus,
-    i.cursist as medewerkers_nummer
+    i1.cursist as medewerker_nummer
 from
-    inschrijvingen i
-        join
-    medewerkers m on i.cursist = m.mnr
+    inschrijvingen i1
 where
-    i.cursus not in ('JAV')
-group by
-    i.cursus, i.cursist
+    not exists (
+        select 1
+        from inschrijvingen i2
+        where i2.cursist = i1.cursist
+          and i2.cursus like 'JAV'
+    )
 
 -- S5.4.
 -- a. Welke medewerkers hebben ondergeschikten? Geef hun naam.
@@ -88,20 +89,28 @@ group by
 
 -- a)
 select
-    naam as medewerker_naam
-from
-    medewerkers
+    m1.naam as medewerker_naam
+from medewerkers m1
 where
-    functie = 'MANAGER';
+    m1.functie = 'MANAGER'
+  and exists (
+    select 1
+    from medewerkers m2
+    where m2.functie <> 'MANAGER'
+)
 
 -- b)
 select
-    naam as medewerker_naam
+    m1.naam as medewerker_naam
 from
-    medewerkers
+    medewerkers m1
 where
-    functie <> 'MANAGER';
-
+    m1.functie <> 'MANAGER'
+  and not exists (
+    select 1
+    from medewerkers m2
+    where m2.functie = 'MANAGER'
+)
 
 -- S5.5.
 -- Geef cursuscode en begindatum van alle uitvoeringen van programmeercursussen
@@ -113,12 +122,13 @@ select
     u.begindatum as begindatum
 from
     uitvoeringen u
-        join
-    cursussen c on u.cursus = c.code
 where
-    c.type = 'BLD' and extract(year from u.begindatum) = 2020
-group by
-    u.cursus, u.begindatum
+    u.cursus in (
+        select c.code
+        from cursussen c
+        where c.type = 'BLD'
+    )
+  and extract(year from u.begindatum) = 2020;
 
 
 -- S5.6.
@@ -129,15 +139,16 @@ group by
 select
     u.cursus as cursus_code,
     u.begindatum as begindatum,
-    count (*) as aantal_inschrijvingen
+    (
+        select count(*)
+        from inschrijvingen i
+        where i.cursus = u.cursus
+    ) as aantal_inschrijvingen
 from
     uitvoeringen u
-        join
-    inschrijvingen i on u.cursus = i.cursus
-group by
-    u.cursus, u.begindatum
 order by
-    u.begindatum
+    u.begindatum;
+
 
 -- S5.7.
 -- Geef voorletter(s) en achternaam van alle trainers die ooit tijdens een
@@ -145,22 +156,23 @@ order by
 -- DROP VIEW IF EXISTS s5_7; CREATE OR REPLACE VIEW s5_7 AS                                                     -- [TEST]
 
 select
-    m.voorl as voorletter_s,
+    m.vvorl as voorletter_s,
     m.naam as achternaam
 from
     medewerkers m
-        join
-    uitvoeringen u on m.mnr = u.docent
-        join
-    cursussen c on u.cursus = c.code
-        join
-    inschrijvingen i on u.cursus = i.cursus
-        join
-    medewerkers chef on  i.cursist = chef.mnr
 where
     m.functie = 'TRAINER'
-  and c.type = 'ALG'
-  and chef.mnr = m.mnr
+  and exists (
+    select 1
+    from uitvoeringen u
+             join cursussen s on u.cursus = c.code
+             join inschrijvingen i on u.cursus = i.cursus
+             join medewerkers cursist on i.cursist = cursist.mnr
+    where u.docent = m.mnr
+      and c.type = 'ALG'
+      and cursist.functie = 'MANAGER'
+)
+
 
 -- S5.8.
 -- Geef de naam van de medewerkers die nog nooit een cursus hebben gegeven.
@@ -170,11 +182,12 @@ select
     m.naam as medewerker_naam
 from
     medewerkers m
-left join
-    uitvoeringen u on m.mnr = u.docent
 where
-    u.docent is null;
-
+    not exists (
+        select 1
+        from uitvoeringen u
+        where u.docent = m.mnr
+    )
 
 
 -- -------------------------[ HU TESTRAAMWERK ]--------------------------------
